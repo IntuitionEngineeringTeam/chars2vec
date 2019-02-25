@@ -51,14 +51,18 @@ Run in your command line
 >> pip install chars2vec
 ~~~
 
-<center> <h3>Usage</h3> </center>
+### Usage
 
+Method `chars2vec.load_model(str model_path)` initializes the model from file.
+There are three pretrained English model with dimensions: 50, 100 and 150.
+To load this pretrained models:
 
-`chars2vec.load_model` function initializes the model.
-To load a trained English model call this function 
-with only one argument – the string 'end_50', 'eng_100' or 'eng_150',
-which defines the dimension of the model. 
-The model creates word embeddings by calling method `vectorize_words`.
+~~~python
+# Load Inutition Engineering pretrained model
+# Models names: 'eng_50', 'eng_100', 'eng_150'.
+model = chars2vec.load_model('eng_50')
+~~~ 
+Method `chars2vec.vectorize_words(words)` returns `numpy.ndarray` of shape `(n_words, dim)` with words embeddings.
 
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -80,7 +84,7 @@ c2v_model = chars2vec.load_model('eng_50')
 word_embeddings = c2v_model.vectorize_words(words)
 ~~~
 
-<center> <h3>Training</h3> </center>
+### Training
 
 `chars2vec.train_model` function creates and trains new chars2vec model.
 The arguments of this function are the dimensionality of the model `dim`,
