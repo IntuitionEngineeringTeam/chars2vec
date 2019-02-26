@@ -3,7 +3,7 @@ import sklearn.decomposition
 import matplotlib.pyplot as plt
 
 
-# load trained model of dimension 50
+# Load pretrained model of dimension 50
 c2v_model = chars2vec.load_model('eng_50')
 
 words = ['Natural', 'Language', 'Understanding',
@@ -12,13 +12,13 @@ words = ['Natural', 'Language', 'Understanding',
          'Naturrow', 'Laguage', 'Unddertandink',
          'Nattural', 'Languagge', 'Umderstoneding']
 
-# create word embeddings
+# Create word embeddings
 word_embeddings = c2v_model.vectorize_words(words)
 
-# project embeddings on plane using the PCA
+# Project embeddings on plane using the PCA
 projection_2d = sklearn.decomposition.PCA(n_components=2).fit_transform(word_embeddings)
 
-# draw words on plane
+# Draw words on plane
 f = plt.figure(figsize=(8, 6))
 
 for j in range(len(projection_2d)):

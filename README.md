@@ -2,38 +2,20 @@
 <center> <h4>Character-based word embeddings model based on RNN</h4> </center>
 
 
-The chars2vec language model is based on the symbolic 
-representation of words – the model maps each word to a vector 
-of a fixed given length, and the model maps the most similar words 
-to the most similar vectors. This model is not 
-a dictionary model (it does not store a set of words and corresponding vectors),
-and can create an embedding vector for any sequence of characters.
+The chars2vec language model is based on the symbolic representation of words 
+– the model maps each word to a vector of a fixed length. Model tries map the 
+most similar words to the most closed vectors. With current approach is possible 
+to create an embedding in vector space for any sequence of characters. 
+Chars2vec is based on TensorFlow deep neural network so it does not keep 
+dictionary of embeddings and generates vector inplace using pretrained model.  
 
-In the library there are trained models of dimensions 50, 100 and 150 for 
-the English language. With the functionality of the library, you can train 
-the chars2vec model to work with any language you choose. Read more details 
-about the architecture of the model and the process of training 
-in [Chars2vec: Character-based language model for handling real world texts 
-with spelling errors and human slang](https://towardsdatascience.com).
+There are pretrained models of dimensions 50, 100 and 150 for the English 
+language. Library provides convinient user API to train model for arbitrary 
+set of characters.  Read more details about the architecture of [Chars2vec: 
+Character-based language model for handling real world texts with spelling 
+errors and human slang](https://towardsdatascience.com).
 
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-*Языковая модель chars2vec основана на символьном представлении слов – модель сопоставляет каждому слову вектор 
-фиксированной заданной длины, и чем сильнее слова похожи по написанию, 
-тем более близки соответствующие им вектора. Данная модель не является словарной
-(не хранит множество слов и соответствующих им векторов), 
-и может сформировать вектор вложения для любой последовательности символов.*
-
-*В библиотеке присутствуют обученные модели размерностей 50, 100 и 150 для английского языка. 
-С помощью функционала библиотеки вы можете обучить модель chars2vec работе с любым выбранным вами языком. 
-Об архитектуре модели и процедуре ее обучения более подробно читайте в
-[TowardsDataScience](https://towardsdatascience.com).*
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
-<h4>Model available for Python 2.7 and 3.6+.</h4>
+<h4>Model available for Python 2.7 and 3.0+.</h4>
 
 <center> <h3>Installation </h3> </center>
 
@@ -58,29 +40,18 @@ There are three pretrained English model with dimensions: 50, 100 and 150.
 To load this pretrained models:
 
 ~~~python
-# Load Inutition Engineering pretrained model
-# Models names: 'eng_50', 'eng_100', 'eng_150'.
-model = chars2vec.load_model('eng_50')
-~~~ 
-Method `chars2vec.vectorize_words(words)` returns `numpy.ndarray` of shape `(n_words, dim)` with words embeddings.
-
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-*Инициализация модели выполняется функцией `chars2vec.load_model`. 
-Для загрузки обученной английской модели требуется вызвать эту функцию 
-только с одним аргументом – строкой 'eng_50', 'eng_100' или 'eng_150',
-которая определяет размерность модели.
-Модель формирует вложения с помощью метода `vectorize_words`.*
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-~~~python
 import chars2vec
 
+# Load Inutition Engineering pretrained model
+# Models names: 'eng_50', 'eng_100', 'eng_150'.
+c2v_model = chars2vec.load_model('eng_50')
+~~~ 
+Method `chars2vec.vectorize_words(words)` returns `numpy.ndarray` of shape `(n_words, dim)` with word embeddings.
+
+~~~python
 words = ['list', 'of', 'words']
 
-c2v_model = chars2vec.load_model('eng_50')
+# Create word embeddings
 word_embeddings = c2v_model.vectorize_words(words)
 ~~~
 
