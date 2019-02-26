@@ -161,7 +161,7 @@ def save_model(c2v_model, path_to_model):
     c2v_model.embedding_model.save_weights(path_to_model + '/weights.h5')
 
     with open(path_to_model + '/model.pkl', 'wb') as f:
-        pickle.dump([c2v_model.dim, c2v_model.char_to_ix], f)
+        pickle.dump([c2v_model.dim, c2v_model.char_to_ix], f, protocol=2)
 
 
 def load_model(path):
@@ -205,7 +205,6 @@ def train_model(emb_dim, training_set, model_chars,
     :param batch_size: parameter 'batch_size' of keras model.
 
     :return c2v_model: Chars2Vec object, trained model.
-            char_to_ix: dict, keys are characters, values are sequence numbers of characters.
     '''
 
     if not isinstance(training_set, list) and not isinstance(training_set, np.ndarray):
