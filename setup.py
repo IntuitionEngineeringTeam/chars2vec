@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='chars2vec',
-    version='0.1.4',
+    version='0.1.5',
     author='Vladimir Chikin',
     author_email='v4@intuition.engineering',
     packages=['chars2vec'],
@@ -19,15 +19,19 @@ setup(
     url='https://github.com/IntuitionEngineeringTeam/chars2vec',
     download_url='https://github.com/IntuitionEngineeringTeam/chars2vec/archive/master.zip',
     license='Apache License 2.0',
-    long_description='The chars2vec language model is based on the symbolic representation of words \
-                    – the model maps each word to a vector of a fixed length. Model tries map the \
-                    most similar words to the most closed vectors. With current approach is possible \
-                    to create an embedding in vector space for any sequence of characters. \
-                    Chars2vec is based on TensorFlow deep neural network so it does not keep \
-                    dictionary of embeddings and generates vector inplace using pretrained model.  \
-                    There are pretrained models of dimensions 50, 100 and 150 for the English \
-                    language. Library provides convenient user API to train model for arbitrary \
-                    set of characters.',
+    long_description='Chars2vec library could be very useful if you are dealing with the texts \
+                        containing abbreviations, slang, typos, or some other specific textual dataset. \
+                        Chars2vec language model is based on the symbolic representation of words – \
+                        the model maps each word to a vector of a fixed length. \
+                        These vector representations are obtained with a custom neural netowrk while \
+                        the latter is being trained on pairs of similar and non-similar words. \
+                        This custom neural net includes LSTM, reading sequences of characters in words, as its part. \
+                        The model maps similarly written words to proximal vectors. \
+                        This approach enables creation of an embedding in vector space for any sequence of characters.\
+                        Chars2vec models does not keep any dictionary of embeddings, \
+                        but generates embedding vectors inplace using pretrained model. \
+                        There are pretrained models of dimensions 50, 100 and 150 for the English language.\
+                        The library provides convenient user API to train a model for an arbitrary set of characters.',
     classifiers=['Programming Language :: Python :: 2.7',
                  'Programming Language :: Python :: 3']
 )

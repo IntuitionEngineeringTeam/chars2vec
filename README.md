@@ -3,16 +3,21 @@
 #### Character-based word embeddings model based on RNN
 
 
-The chars2vec language model is based on the symbolic representation of words 
-– the model maps each word to a vector of a fixed length. Model tries map the 
-most similar words to the most closed vectors. With current approach is possible 
-to create an embedding in vector space for any sequence of characters. 
-Chars2vec is based on TensorFlow deep neural network so it does not keep 
-dictionary of embeddings and generates vector inplace using pretrained model.  
+Chars2vec library could be very useful if you are dealing with the texts 
+containing abbreviations, slang, typos, or some other specific textual dataset. 
+Chars2vec language model is based on the symbolic representation of words – 
+the model maps each word to a vector of a fixed length. 
+These vector representations are obtained with a custom neural netowrk while 
+the latter is being trained on pairs of similar and non-similar words. 
+This custom neural net includes LSTM, reading sequences of characters in words, as its part. 
+The model maps similarly written words to proximal vectors. 
+This approach enables creation of an embedding in vector space for any sequence of characters. 
+Chars2vec models does not keep any dictionary of embeddings, 
+but generates embedding vectors inplace using pretrained model. 
 
-There are pretrained models of dimensions 50, 100 and 150 for the English 
-language. Library provides convenient user API to train model for arbitrary 
-set of characters.  Read more details about the architecture of [Chars2vec: 
+There are pretrained models of dimensions 50, 100 and 150 for the English language.
+The library provides convenient user API to train a model for an arbitrary set of characters. 
+Read more details about the architecture of [Chars2vec: 
 Character-based language model for handling real world texts with spelling 
 errors and human slang](https://towardsdatascience.com).
 
