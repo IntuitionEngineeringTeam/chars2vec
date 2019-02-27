@@ -1,1 +1,1 @@
-recursive-include chars2vec/*
+recursive-include chars2vec/ *

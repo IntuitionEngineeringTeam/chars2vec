@@ -10,7 +10,7 @@ Chars2vec is based on TensorFlow deep neural network so it does not keep
 dictionary of embeddings and generates vector inplace using pretrained model.  
 
 There are pretrained models of dimensions 50, 100 and 150 for the English 
-language. Library provides convinient user API to train model for arbitrary 
+language. Library provides convenient user API to train model for arbitrary 
 set of characters.  Read more details about the architecture of [Chars2vec: 
 Character-based language model for handling real world texts with spelling 
 errors and human slang](https://towardsdatascience.com).
@@ -43,7 +43,7 @@ To load this pretrained models:
 import chars2vec
 
 # Load Inutition Engineering pretrained model
-# Models names: 'eng_50', 'eng_100', 'eng_150'.
+# Models names: 'eng_50', 'eng_100', 'eng_150'
 c2v_model = chars2vec.load_model('eng_50')
 ~~~ 
 Method `chars2vec.vectorize_words(words)` returns `numpy.ndarray` of shape `(n_words, dim)` with word embeddings.

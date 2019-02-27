@@ -1,2 +1,3 @@
-numpy
+setuptools
 keras
+tensorflow

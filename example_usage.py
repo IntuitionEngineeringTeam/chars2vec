@@ -3,7 +3,8 @@ import sklearn.decomposition
 import matplotlib.pyplot as plt
 
 
-# Load pretrained model of dimension 50
+# Load Inutition Engineering pretrained model
+# Models names: 'eng_50', 'eng_100', 'eng_150'
 c2v_model = chars2vec.load_model('eng_50')
 
 words = ['Natural', 'Language', 'Understanding',
@@ -28,3 +29,8 @@ for j in range(len(projection_2d)):
                 facecolors='green' if words[j] in ['Natural', 'Language', 'Understanding'] else 'black')
 
 plt.show()
+
+
+# readme
+# comments train
+# adj code in article
