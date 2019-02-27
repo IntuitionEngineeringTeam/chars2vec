@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='chars2vec',
-    version='0.1.3',
+    version='0.1.4',
     author='Vladimir Chikin',
     author_email='v4@intuition.engineering',
     packages=['chars2vec'],
@@ -16,7 +16,7 @@ setup(
     description='Character-based language model based on RNN',
     maintainer='Intuition',
     maintainer_email='dev@intuition.engineering',
-    url='',
+    url='https://github.com/IntuitionEngineeringTeam/chars2vec',
     download_url='https://github.com/IntuitionEngineeringTeam/chars2vec/archive/master.zip',
     license='Apache License 2.0',
     long_description='The chars2vec language model is based on the symbolic representation of words \
