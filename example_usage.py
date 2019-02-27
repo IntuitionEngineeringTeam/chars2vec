@@ -26,11 +26,7 @@ for j in range(len(projection_2d)):
     plt.scatter(projection_2d[j, 0], projection_2d[j, 1],
                 marker=('$' + words[j] + '$'),
                 s=500 * len(words[j]), label=j,
-                facecolors='green' if words[j] in ['Natural', 'Language', 'Understanding'] else 'black')
+                facecolors='green' if words[j]
+                            in ['Natural', 'Language', 'Understanding'] else 'black')
 
 plt.show()
-
-
-# readme
-# comments train
-# adj code in article

@@ -13,10 +13,14 @@ model_chars = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', 
                'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
                'x', 'y', 'z']
 
+# Create and train chars2vec model using given training data
 my_c2v_model = chars2vec.train_model(dim, training_set, model_chars)
+
+# Save pretrained model
 chars2vec.save_model(my_c2v_model, path_to_model)
 
 words = ['list', 'of', 'words']
 
+# Load pretrained model, create word embeddings
 c2v_model = chars2vec.load_model(path_to_model)
 word_embeddings = c2v_model.vectorize_words(words)
