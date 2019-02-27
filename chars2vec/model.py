@@ -191,13 +191,14 @@ def load_model(path):
     return c2v_model
 
 
-def train_model(emb_dim, training_set, model_chars,
+def train_model(emb_dim, X_train, y_train, model_chars,
                 max_epochs=200, patience=10, validation_split=0.05, batch_size=64):
     '''
     Creates and trains chars2vec model using given training data.
 
     :param emb_dim: int, dimension of embeddings.
-    :param training_set: list or numpy.ndarray of strings, each string should be like '*word1* *word2* *target*'
+    :param X_train: list or numpy.ndarray of word pairs.
+    :param y_train: list or numpy.ndarray of target values that describe the proximity of words.
     :param model_chars: list or numpy.ndarray of basic chars in model.
     :param max_epochs: parameter 'epochs' of keras model.
     :param patience: parameter 'patience' of callback in keras model.
@@ -207,20 +208,19 @@ def train_model(emb_dim, training_set, model_chars,
     :return c2v_model: Chars2Vec object, trained model.
     '''
 
-    if not isinstance(training_set, list) and not isinstance(training_set, np.ndarray):
-        raise TypeError("parameter 'train_data' must be a list or numpy.ndarray")
+    if not isinstance(X_train, list) and not isinstance(X_train, np.ndarray):
+        raise TypeError("parameter 'X_train' must be a list or numpy.ndarray")\
+
+    if not isinstance(y_train, list) and not isinstance(y_train, np.ndarray):
+        raise TypeError("parameter 'y_train' must be a list or numpy.ndarray")
 
     if not isinstance(model_chars, list) and not isinstance(model_chars, np.ndarray):
         raise TypeError("parameter 'model_chars' must be a list or numpy.ndarray")
 
-    data = [data_str.lower().strip() for data_str in training_set]
-    data = [(data_str.split(' ')[0], data_str.split(' ')[1], data_str.split(' ')[2]) for data_str in data]
-
     char_to_ix = {ch: i for i, ch in enumerate(model_chars)}
     c2v_model = Chars2Vec(emb_dim, char_to_ix)
 
-    list_of_pairs_samples = [(el[0], el[1]) for el in data]
-    targets = [int(el[2]) for el in data]
-    c2v_model.fit(list_of_pairs_samples, targets, max_epochs, patience, validation_split, batch_size)
+    targets = [float(el) for el in y_train]
+    c2v_model.fit(X_train, targets, max_epochs, patience, validation_split, batch_size)
 
     return c2v_model

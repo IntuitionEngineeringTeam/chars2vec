@@ -4,8 +4,16 @@ import chars2vec
 dim = 50
 
 path_to_model = 'path/to/model/directory'
-path_to_training_set = 'path/to/txt/file/with/training/set'
-training_set = open(path_to_training_set, 'r').readlines()
+
+X_train = [('mecbanizing', 'mechanizing'), # similar words, target is equal 0
+           ('dicovery', 'dis7overy'), # similar words, target is equal 0
+           ('prot$oplasmatic', 'prtoplasmatic'), # similar words, target is equal 0
+           ('copulateng', 'lzateful'), # not similar words, target is equal 1
+           ('estry', 'evadin6'), # not similar words, target is equal 1
+           ('cirrfosis', 'afear') # not similar words, target is equal 1
+          ]
+
+y_train = [0, 0, 0, 1, 1, 1]
 
 model_chars = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.',
                '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<',
@@ -14,7 +22,7 @@ model_chars = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', 
                'x', 'y', 'z']
 
 # Create and train chars2vec model using given training data
-my_c2v_model = chars2vec.train_model(dim, training_set, model_chars)
+my_c2v_model = chars2vec.train_model(dim, X_train, y_train, model_chars)
 
 # Save pretrained model
 chars2vec.save_model(my_c2v_model, path_to_model)

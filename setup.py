@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='chars2vec',
-    version='0.1.2',
+    version='0.1.3',
     author='Vladimir Chikin',
     author_email='v4@intuition.engineering',
     packages=['chars2vec'],

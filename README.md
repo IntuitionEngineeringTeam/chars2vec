@@ -59,20 +59,25 @@ word_embeddings = c2v_model.vectorize_words(words)
 
 ### Training
 
-Function `chars2vec.train_model(int emb_dim, training_set, model_chars)` 
+Function `chars2vec.train_model(int emb_dim, X_train, y_train, model_chars)` 
 creates and trains new chars2vec model and returns `chars2vec.Chars2Vec` object.
 
-Parameter `emb_dim` is a dimension of the model. Parameter `model_chars`
-is a list of chars for the model. Characters that are not in the `model_chars`
- list will be ignored by the model. 
+Parameter `emb_dim` is a dimension of the model. 
 
-Each element of the training dataset must be represented by a pair of words
-and a target value that describes the proximity of words. 
-Thus, each row of the list `training_set` should be like `*word_1* *word_2* *target_value*`.
-Read more about the format of the training dataset and the method 
-of generating in [article about chars2vec](https://towardsdatascience.com).
+Parameter `X_train` is a list or numpy.ndarray of word pairs.
+Parameter `y_train` is a list or numpy.ndarray of target values that describe the proximity of words.
 
-Function `chars2vec.save_model(c2v_model, str path_to_model)` saves the trained model to directory.
+Training set (`X_train`, `y_train`) consists of pairs of "similar" and "not similar" words; 
+a pair of "similar" words is labeled with 0 target value, and a pair of "not similar" with 1. 
+
+Parameter `model_chars` is a list of chars for the model.
+Characters which are not in the `model_chars`
+list will be ignored by the model. 
+
+Read more about chars2vec training and generation of training dataset in [article about chars2vec](https://towardsdatascience.com).
+
+Function `chars2vec.save_model(c2v_model, str path_to_model)` saves the trained model 
+to the directory.
 
 
 ~~~python
@@ -80,8 +85,16 @@ import chars2vec
 
 dim = 50
 path_to_model = 'path/to/model/directory'
-path_to_training_set = 'path/to/txt/file/with/training/set'
-training_set = open(path_to_training_set, 'r').readlines()
+
+X_train = [('mecbanizing', 'mechanizing'), # similar words, target is equal 0
+           ('dicovery', 'dis7overy'), # similar words, target is equal 0
+           ('prot$oplasmatic', 'prtoplasmatic'), # similar words, target is equal 0
+           ('copulateng', 'lzateful'), # not similar words, target is equal 1
+           ('estry', 'evadin6'), # not similar words, target is equal 1
+           ('cirrfosis', 'afear') # not similar words, target is equal 1
+          ]
+
+y_train = [0, 0, 0, 1, 1, 1]
 
 model_chars = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.',
                '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<',
@@ -90,7 +103,7 @@ model_chars = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', 
                'x', 'y', 'z']
 
 # Create and train chars2vec model using given training data
-my_c2v_model = chars2vec.train_model(dim, training_set, model_chars)
+my_c2v_model = chars2vec.train_model(dim, X_train, y_train, model_chars)
 
 # Save your pretrained model
 chars2vec.save_model(my_c2v_model, path_to_model)
