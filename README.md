@@ -1,6 +1,6 @@
-#chars2vec
+# chars2vec
 
-####Character-based word embeddings model based on RNN
+#### Character-based word embeddings model based on RNN
 
 
 The chars2vec language model is based on the symbolic representation of words 
@@ -16,7 +16,7 @@ set of characters.  Read more details about the architecture of [Chars2vec:
 Character-based language model for handling real world texts with spelling 
 errors and human slang](https://towardsdatascience.com).
 
-####Model available for Python 2.7 and 3.0+.
+#### Model available for Python 2.7 and 3.0+.
 
 ### Installation
 
@@ -103,7 +103,7 @@ Full code examples for usage and training models see in
 `example_usage.py` and `example_training.py` files.
 
 
-###Contact us
+### Contact us
 
 Website of our team [IntuitionEngineering](https://intuition.engineering).
 
