@@ -1,5 +1,6 @@
-<center> <h1>chars2vec </h1> </center>
-<center> <h4>Character-based word embeddings model based on RNN</h4> </center>
+#chars2vec
+
+####Character-based word embeddings model based on RNN
 
 
 The chars2vec language model is based on the symbolic representation of words 
@@ -15,9 +16,9 @@ set of characters.  Read more details about the architecture of [Chars2vec:
 Character-based language model for handling real world texts with spelling 
 errors and human slang](https://towardsdatascience.com).
 
-<h4>Model available for Python 2.7 and 3.0+.</h4>
+####Model available for Python 2.7 and 3.0+.
 
-<center> <h3>Installation </h3> </center>
+### Installation
 
 <h5> 1. Build and install from source </h5>
 Download project source and run in your command line
@@ -35,7 +36,8 @@ Run in your command line
 
 ### Usage
 
-Method `chars2vec.load_model(str model_path)` initializes the model from file.
+Function `chars2vec.load_model(str path)` initializes the model from directory 
+and returns `chars2vec.Chars2Vec` object.
 There are three pretrained English model with dimensions: 50, 100 and 150.
 To load this pretrained models:
 
@@ -46,7 +48,7 @@ import chars2vec
 # Models names: 'eng_50', 'eng_100', 'eng_150'
 c2v_model = chars2vec.load_model('eng_50')
 ~~~ 
-Method `chars2vec.vectorize_words(words)` returns `numpy.ndarray` of shape `(n_words, dim)` with word embeddings.
+Method `chars2vec.Chars2Vec.vectorize_words(words)` returns `numpy.ndarray` of shape `(n_words, dim)` with word embeddings.
 
 ~~~python
 words = ['list', 'of', 'words']
@@ -57,40 +59,20 @@ word_embeddings = c2v_model.vectorize_words(words)
 
 ### Training
 
-`chars2vec.train_model` function creates and trains new chars2vec model.
-The arguments of this function are the dimensionality of the model `dim`,
-training dataset `training_set`, and a list of chars for the model `model_chars`.
-Characters that are not in the `model_chars` list will be ignored by the model
-when the text is vectorized. 
+Function `chars2vec.train_model(int emb_dim, training_set, model_chars)` 
+creates and trains new chars2vec model and returns `chars2vec.Chars2Vec` object.
+
+Parameter `emb_dim` is a dimension of the model. Parameter `model_chars`
+is a list of chars for the model. Characters that are not in the `model_chars`
+ list will be ignored by the model. 
 
 Each element of the training dataset must be represented by a pair of words
-and a target value that describes the proximity of the words. 
-Thus, each row of the list `training_set` should be like `*word_1* *word_2* *target_value`.
-Read more about the format of the training data set and the method 
+and a target value that describes the proximity of words. 
+Thus, each row of the list `training_set` should be like `*word_1* *word_2* *target_value*`.
+Read more about the format of the training dataset and the method 
 of generating in [article about chars2vec](https://towardsdatascience.com).
 
-`chars2vec.train_model` function returns the trained model.
-Save the trained model by using the function `chars2vec.save_model`.
-
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-*Создание новой модели и ее обучение выполнется функцией `chars2vec.train_model`.
-В качестве аргументов этой функции требуется указать размерность модели `dim`,
-набор обучающих данных `training_set` и список существенных для модели символов
-`model_chars`. Символы, не входящие в список `model_chars`, 
-будут игнорироваться моделью при векторизации текста.*
-
-*Каждый элемент набора обучающих данных должен быть представлен парой слов и
-целевым значением, описывающим близость написания этих слов. Таким образом, каждая 
-строка из списка training_set должна иметь вид `*word_1* *word_2* *target_value*`.
-Подробнее о формате обучающего набора данных и способе его генерации читайте в 
-[статье](https://towardsdatascience.com).*
-
-*Функция `chars2vec.train_model` возвращает обученную модель. 
-Сохранить обученную модель можно с помощью функции `chars2vec.save_model`.*
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Function `chars2vec.save_model(c2v_model, str path_to_model)` saves the trained model to directory.
 
 
 ~~~python
@@ -107,37 +89,21 @@ model_chars = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', 
                'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
                'x', 'y', 'z']
 
+# Create and train chars2vec model using given training data
 my_c2v_model = chars2vec.train_model(dim, training_set, model_chars)
+
+# Save your pretrained model
 chars2vec.save_model(my_c2v_model, path_to_model)
-~~~
 
-Initialize your model by `chars2vec.load_model` function.
-Specify the path to the model directory as an argument.
-
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-*Инициализации вашей модели осуществляется функцией `chars2vec.load_model`.
-Укажите путь к директории модели в качестве аргумента.*
- 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
-~~~python
+# Load your pretrained model 
 c2v_model = chars2vec.load_model(path_to_model)
 ~~~
 
-Full code examples for usage and training models see in `example_usage.py` and `example_training.py` files.
+Full code examples for usage and training models see in
+`example_usage.py` and `example_training.py` files.
 
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-*Полный код примеров использования и обучения модели смотри в файлах `example_usage.py` и `example_training.py`.*
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
-<center> <h3>Contact us</h3> </center>
+###Contact us
 
 Website of our team [IntuitionEngineering](https://intuition.engineering).
 
