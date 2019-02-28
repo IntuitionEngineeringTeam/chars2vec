@@ -19,7 +19,7 @@ There are pretrained models of dimensions 50, 100 and 150 for the English langua
 The library provides convenient user API to train a model for an arbitrary set of characters. 
 Read more details about the architecture of [Chars2vec: 
 Character-based language model for handling real world texts with spelling 
-errors and human slang](https://towardsdatascience.com).
+errors and human slang](https://towardsdatascience.com/chars2vec-character-based-language-model-for-handling-real-world-texts-with-spelling-errors-and-a3e4053a147d)
 
 #### Model available for Python 2.7 and 3.0+.
 
@@ -79,7 +79,8 @@ Parameter `model_chars` is a list of chars for the model.
 Characters which are not in the `model_chars`
 list will be ignored by the model. 
 
-Read more about chars2vec training and generation of training dataset in [article about chars2vec](https://towardsdatascience.com).
+Read more about chars2vec training and generation of training dataset in 
+[article about chars2vec](https://towardsdatascience.com/chars2vec-character-based-language-model-for-handling-real-world-texts-with-spelling-errors-and-a3e4053a147d).
 
 Function `chars2vec.save_model(c2v_model, str path_to_model)` saves the trained model 
 to the directory.
