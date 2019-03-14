@@ -15,7 +15,7 @@ This approach enables creation of an embedding in vector space for any sequence 
 Chars2vec models does not keep any dictionary of embeddings, 
 but generates embedding vectors inplace using pretrained model. 
 
-There are pretrained models of dimensions 50, 100 and 150 for the English language.
+There are pretrained models of dimensions 50, 100, 150, 200 and 300 for the English language.
 The library provides convenient user API to train a model for an arbitrary set of characters. 
 Read more details about the architecture of [Chars2vec: 
 Character-based language model for handling real world texts with spelling 

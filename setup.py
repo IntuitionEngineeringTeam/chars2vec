@@ -30,7 +30,7 @@ setup(
                         This approach enables creation of an embedding in vector space for any sequence of characters.\
                         Chars2vec models does not keep any dictionary of embeddings, \
                         but generates embedding vectors inplace using pretrained model. \
-                        There are pretrained models of dimensions 50, 100 and 150 for the English language.\
+                        There are pretrained models of dimensions 50, 100, 150, 200 and 300 for the English language.\
                         The library provides convenient user API to train a model for an arbitrary set of characters.',
     classifiers=['Programming Language :: Python :: 2.7',
                  'Programming Language :: Python :: 3']
