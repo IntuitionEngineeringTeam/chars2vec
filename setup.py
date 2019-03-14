@@ -7,13 +7,13 @@ from setuptools import setup
 
 setup(
     name='chars2vec',
-    version='0.1.5',
+    version='0.1.6',
     author='Vladimir Chikin',
     author_email='v4@intuition.engineering',
     packages=['chars2vec'],
     include_package_data=True,
     package_data={'chars2vec': ['trained_models/*']},
-    description='Character-based language model based on RNN',
+    description='Character-based word embeddings model based on RNN',
     maintainer='Intuition',
     maintainer_email='dev@intuition.engineering',
     url='https://github.com/IntuitionEngineeringTeam/chars2vec',

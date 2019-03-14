@@ -43,14 +43,14 @@ Run in your command line
 
 Function `chars2vec.load_model(str path)` initializes the model from directory 
 and returns `chars2vec.Chars2Vec` object.
-There are three pretrained English model with dimensions: 50, 100 and 150.
+There are 5 pretrained English model with dimensions: 50, 100, 150, 200 and 300.
 To load this pretrained models:
 
 ~~~python
 import chars2vec
 
 # Load Inutition Engineering pretrained model
-# Models names: 'eng_50', 'eng_100', 'eng_150'
+# Models names: 'eng_50', 'eng_100', 'eng_150', 'eng_200', 'eng_300'
 c2v_model = chars2vec.load_model('eng_50')
 ~~~ 
 Method `chars2vec.Chars2Vec.vectorize_words(words)` returns `numpy.ndarray` of shape `(n_words, dim)` with word embeddings.

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 # Load Inutition Engineering pretrained model
-# Models names: 'eng_50', 'eng_100', 'eng_150'
+# Models names: 'eng_50', 'eng_100', 'eng_150', 'eng_200', 'eng_300'
 c2v_model = chars2vec.load_model('eng_50')
 
 words = ['Natural', 'Language', 'Understanding',

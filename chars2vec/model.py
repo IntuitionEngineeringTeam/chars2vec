@@ -24,6 +24,7 @@ class Chars2Vec:
         self.ix_to_char = {char_to_ix[ch]: ch for ch in char_to_ix}
         self.vocab_size = len(self.char_to_ix)
         self.dim = emb_dim
+        self.cache = {}
 
         lstm_input = keras.layers.Input(shape=(None, self.vocab_size))
 
@@ -43,6 +44,7 @@ class Chars2Vec:
 
         self.model = keras.models.Model(inputs=[model_input_1, model_input_2], outputs=model_output)
         self.model.compile(optimizer='adam', loss='mae')
+
 
     def fit(self, word_pairs, targets,
             max_epochs, patience, validation_split, batch_size):
@@ -109,7 +111,7 @@ class Chars2Vec:
 
     def vectorize_words(self, words):
         '''
-        Returns embeddings for list of words.
+        Returns embeddings for list of words. Uses cache of word embeddings to vectorization speed up.
 
         :param words: list or numpy.ndarray of strings.
 
@@ -119,32 +121,42 @@ class Chars2Vec:
         if not isinstance(words, list) and not isinstance(words, np.ndarray):
             raise TypeError("parameter 'words' must be a list or numpy.ndarray")
 
-        list_of_embeddings = []
+        words = [w.lower() for w in words]
+        unique_words = np.unique(words)
+        new_words = [w for w in unique_words if w not in self.cache]
 
-        for current_word in words:
+        if len(new_words) > 0:
 
-            if not isinstance(current_word, str):
-                raise TypeError("word must be a string")
+            list_of_embeddings = []
 
-            word = current_word.lower()
-            current_embedding = []
+            for current_word in new_words:
 
-            for t in range(len(word)):
+                if not isinstance(current_word, str):
+                    raise TypeError("word must be a string")
 
-                if word[t] in self.char_to_ix:
-                    x = np.zeros(self.vocab_size)
-                    x[self.char_to_ix[word[t]]] = 1
-                    current_embedding.append(x)
+                current_embedding = []
 
-                else:
-                    current_embedding.append(np.zeros(self.vocab_size))
+                for t in range(len(current_word)):
 
-            list_of_embeddings.append(np.array(current_embedding))
+                    if current_word[t] in self.char_to_ix:
+                        x = np.zeros(self.vocab_size)
+                        x[self.char_to_ix[current_word[t]]] = 1
+                        current_embedding.append(x)
 
-        embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(list_of_embeddings)
-        word_vectors = self.embedding_model.predict([embeddings_pad_seq])
+                    else:
+                        current_embedding.append(np.zeros(self.vocab_size))
 
-        return word_vectors
+                list_of_embeddings.append(np.array(current_embedding))
+
+            embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(list_of_embeddings)
+            new_words_vectors = self.embedding_model.predict([embeddings_pad_seq])
+
+            for i in range(len(new_words)):
+                self.cache[new_words[i]] = new_words_vectors[i]
+
+        word_vectors = [self.cache[current_word] for current_word in words]
+
+        return np.array(word_vectors)
 
 
 def save_model(c2v_model, path_to_model):
@@ -168,13 +180,13 @@ def load_model(path):
     '''
     Loads trained model.
 
-    :param path: str, if it is 'eng_50', 'eng_100' or 'eng_150' then loads one of default models,
+    :param path: str, if it is 'eng_50', 'eng_100', 'eng_150', 'eng_200' or 'eng_300' then loads one of default models,
      else loads model from `path`.
 
     :return c2v_model: Chars2Vec object, trained model.
     '''
 
-    if path in ['eng_50', 'eng_100', 'eng_150']:
+    if path in ['eng_50', 'eng_100', 'eng_150', 'eng_200', 'eng_300']:
         path_to_model = os.path.dirname(os.path.abspath(__file__)) + '/trained_models/' + path
 
     else:
