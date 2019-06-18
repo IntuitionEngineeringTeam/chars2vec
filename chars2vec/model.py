@@ -109,11 +109,12 @@ class Chars2Vec:
                        validation_split=validation_split,
                        callbacks=[keras.callbacks.EarlyStopping(monitor='val_loss', patience=patience)])
 
-    def vectorize_words(self, words):
+    def vectorize_words(self, words, maxlen_padseq=None):
         '''
         Returns embeddings for list of words. Uses cache of word embeddings to vectorization speed up.
 
         :param words: list or numpy.ndarray of strings.
+        :param maxlen_padseq: parameter 'maxlen' for keras pad_sequences transform.
 
         :return word_vectors: numpy.ndarray, word embeddings.
         '''
@@ -148,7 +149,7 @@ class Chars2Vec:
 
                 list_of_embeddings.append(np.array(current_embedding))
 
-            embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(list_of_embeddings)
+            embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(list_of_embeddings, maxlen=maxlen_padseq)
             new_words_vectors = self.embedding_model.predict([embeddings_pad_seq])
 
             for i in range(len(new_words)):
