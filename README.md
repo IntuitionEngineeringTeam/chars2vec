@@ -120,12 +120,3 @@ c2v_model = chars2vec.load_model(path_to_model)
 
 Full code examples for usage and training models see in
 `example_usage.py` and `example_training.py` files.
-
-
-### Contact us
-
-Website of our team [IntuitionEngineering](https://intuition.engineering).
-
-Core developer email: v4@intuition.engineering.
-
-Intuition dev email: dev@intuition.engineering.
