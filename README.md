@@ -7,7 +7,7 @@ Chars2vec library could be very useful if you are dealing with the texts
 containing abbreviations, slang, typos, or some other specific textual dataset. 
 Chars2vec language model is based on the symbolic representation of words – 
 the model maps each word to a vector of a fixed length. 
-These vector representations are obtained with a custom neural netowrk while 
+These vector representations are obtained with a custom neural network while 
 the latter is being trained on pairs of similar and non-similar words. 
 This custom neural net includes LSTM, reading sequences of characters in words, as its part. 
 The model maps similarly written words to proximal vectors. 
