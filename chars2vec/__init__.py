@@ -1,1 +1,1 @@
-from .model import *
+from .model import Chars2Vec, load_model, save_model, train_model
