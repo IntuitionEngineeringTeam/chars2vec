@@ -1,14 +1,14 @@
-import numpy as np
-import pickle
-import keras
 import os
+import pickle
+
+import keras
+import numpy as np
 
 
 class Chars2Vec:
     def __init__(self, emb_dim, char_to_ix):
         """
         Creates chars2vec model.
-
         :param emb_dim: int, dimension of embeddings.
         :param char_to_ix: dict, keys are characters, values are sequence numbers of characters.
         """
@@ -24,14 +24,19 @@ class Chars2Vec:
         self.vocab_size = len(self.char_to_ix)
         self.dim = emb_dim
         self.cache = {}
+        self.embedding_model = self._get_embedding_model()
+        self.model = self._get_model()
+        self.model.compile(optimizer="adam", loss="mae")
 
-        lstm_input = keras.layers.Input(shape=(None, self.vocab_size))
+    def _get_embedding_model(self):
+        inputs = keras.layers.Input(shape=(None, self.vocab_size))
 
-        x = keras.layers.LSTM(emb_dim, return_sequences=True)(lstm_input)
-        x = keras.layers.LSTM(emb_dim)(x)
+        outputs = keras.layers.LSTM(self.dim, return_sequences=True)(inputs)
+        outputs = keras.layers.LSTM(self.dim)(outputs)
 
-        self.embedding_model = keras.models.Model(inputs=[lstm_input], outputs=x)
+        return keras.models.Model(inputs=[inputs], outputs=outputs)
 
+    def _get_model(self):
         model_input_1 = keras.layers.Input(shape=(None, self.vocab_size))
         model_input_2 = keras.layers.Input(shape=(None, self.vocab_size))
 
@@ -41,17 +46,24 @@ class Chars2Vec:
         x = keras.layers.Dot(1)([x, x])
         model_output = keras.layers.Dense(1, activation="sigmoid")(x)
 
-        self.model = keras.models.Model(
+        return keras.models.Model(
             inputs=[model_input_1, model_input_2], outputs=model_output
         )
-        self.model.compile(optimizer="adam", loss="mae")
+
+    def _create_word_embedding(self, word):
+        word_embedding = []
+        for char in word.lower():
+            char_embedding = np.zeros(self.vocab_size)
+            if char in self.char_to_ix:
+                char_embedding[self.char_to_ix[char]] = 1
+            word_embedding.append(char_embedding)
+        return word_embedding
 
     def fit(
         self, word_pairs, targets, max_epochs, patience, validation_split, batch_size
     ):
         """
         Fits model.
-
         :param word_pairs: list or numpy.ndarray of word pairs.
         :param targets: list or numpy.ndarray of targets.
         :param max_epochs: parameter 'epochs' of keras model.
@@ -60,47 +72,31 @@ class Chars2Vec:
         :param batch_size: parameter 'batch_size' of keras model.
         """
 
-        if not isinstance(word_pairs, list) and not isinstance(word_pairs, np.ndarray):
+        if not isinstance(word_pairs, (list, np.ndarray)):
             raise TypeError("parameters 'word_pairs' must be a list or numpy.ndarray")
 
-        if not isinstance(targets, list) and not isinstance(targets, np.ndarray):
+        if not isinstance(targets, (list, np.ndarray)):
             raise TypeError("parameters 'targets' must be a list or numpy.ndarray")
 
         x_1, x_2 = [], []
+        for word_pair in word_pairs:
+            if len(word_pair) != 2:
+                raise ValueError(
+                    "`word_pairs` contains a 'pair' with more than two words."
+                )
 
-        for pair_words in word_pairs:
-            emb_list_1 = []
-            emb_list_2 = []
+            if not all(isinstance(word, str) for word in word_pair):
+                raise TypeError("Both words must be strings.")
 
-            if not isinstance(pair_words[0], str) or not isinstance(pair_words[1], str):
-                raise TypeError("word must be a string")
+            first_word, second_word = word_pair
 
-            first_word = pair_words[0].lower()
-            second_word = pair_words[1].lower()
+            first_word_embedding = self._create_word_embedding(word=first_word.lower())
+            x_1.append(np.array(first_word_embedding))
 
-            for t in range(len(first_word)):
-
-                if first_word[t] in self.char_to_ix:
-                    x = np.zeros(self.vocab_size)
-                    x[self.char_to_ix[first_word[t]]] = 1
-                    emb_list_1.append(x)
-
-                else:
-                    emb_list_1.append(np.zeros(self.vocab_size))
-
-            x_1.append(np.array(emb_list_1))
-
-            for t in range(len(second_word)):
-
-                if second_word[t] in self.char_to_ix:
-                    x = np.zeros(self.vocab_size)
-                    x[self.char_to_ix[second_word[t]]] = 1
-                    emb_list_2.append(x)
-
-                else:
-                    emb_list_2.append(np.zeros(self.vocab_size))
-
-            x_2.append(np.array(emb_list_2))
+            second_word_embedding = self._create_word_embedding(
+                word=second_word.lower()
+            )
+            x_2.append(np.array(second_word_embedding))
 
         x_1_pad_seq = keras.preprocessing.sequence.pad_sequences(x_1)
         x_2_pad_seq = keras.preprocessing.sequence.pad_sequences(x_2)
@@ -119,42 +115,26 @@ class Chars2Vec:
     def vectorize_words(self, words, maxlen_padseq=None):
         """
         Returns embeddings for list of words. Uses cache of word embeddings to vectorization speed up.
-
         :param words: list or numpy.ndarray of strings.
         :param maxlen_padseq: parameter 'maxlen' for keras pad_sequences transform.
-
         :return word_vectors: numpy.ndarray, word embeddings.
         """
 
-        if not isinstance(words, list) and not isinstance(words, np.ndarray):
+        if not isinstance(words, (list, np.ndarray)):
             raise TypeError("parameter 'words' must be a list or numpy.ndarray")
 
         words = [w.lower() for w in words]
         unique_words = np.unique(words)
         new_words = [w for w in unique_words if w not in self.cache]
 
-        if len(new_words) > 0:
-
+        if new_words:
             list_of_embeddings = []
-
-            for current_word in new_words:
-
-                if not isinstance(current_word, str):
+            for word in new_words:
+                if not isinstance(word, str):
                     raise TypeError("word must be a string")
 
-                current_embedding = []
-
-                for t in range(len(current_word)):
-
-                    if current_word[t] in self.char_to_ix:
-                        x = np.zeros(self.vocab_size)
-                        x[self.char_to_ix[current_word[t]]] = 1
-                        current_embedding.append(x)
-
-                    else:
-                        current_embedding.append(np.zeros(self.vocab_size))
-
-                list_of_embeddings.append(np.array(current_embedding))
+                word_embedding = self._create_word_embedding(word=word.lower())
+                list_of_embeddings.append(np.array(word_embedding))
 
             embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(
                 list_of_embeddings, maxlen=maxlen_padseq
@@ -172,7 +152,6 @@ class Chars2Vec:
 def save_model(c2v_model, path_to_model):
     """
     Saves trained model to directory.
-
     :param c2v_model: Chars2Vec object, trained model.
     :param path_to_model: str, path to save model.
     """
@@ -189,10 +168,8 @@ def save_model(c2v_model, path_to_model):
 def load_model(path):
     """
     Loads trained model.
-
     :param path: str, if it is 'eng_50', 'eng_100', 'eng_150', 'eng_200' or 'eng_300' then loads one of default models,
      else loads model from `path`.
-
     :return c2v_model: Chars2Vec object, trained model.
     """
 
@@ -227,7 +204,6 @@ def train_model(
 ):
     """
     Creates and trains chars2vec model using given training data.
-
     :param emb_dim: int, dimension of embeddings.
     :param X_train: list or numpy.ndarray of word pairs.
     :param y_train: list or numpy.ndarray of target values that describe the proximity of words.
@@ -236,16 +212,14 @@ def train_model(
     :param patience: parameter 'patience' of callback in keras model.
     :param validation_split: parameter 'validation_split' of keras model.
     :param batch_size: parameter 'batch_size' of keras model.
-
     :return c2v_model: Chars2Vec object, trained model.
     """
 
-    if not isinstance(X_train, list) and not isinstance(X_train, np.ndarray):
+    if not isinstance(X_train, (list, np.ndarray)):
         raise TypeError("parameter 'X_train' must be a list or numpy.ndarray")
-    if not isinstance(y_train, list) and not isinstance(y_train, np.ndarray):
+    if not isinstance(y_train, (list, np.ndarray)):
         raise TypeError("parameter 'y_train' must be a list or numpy.ndarray")
-
-    if not isinstance(model_chars, list) and not isinstance(model_chars, np.ndarray):
+    if not isinstance(model_chars, (list, np.ndarray)):
         raise TypeError("parameter 'model_chars' must be a list or numpy.ndarray")
 
     char_to_ix = {ch: i for i, ch in enumerate(model_chars)}
