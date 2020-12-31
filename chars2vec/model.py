@@ -5,14 +5,13 @@ import os
 
 
 class Chars2Vec:
-
     def __init__(self, emb_dim, char_to_ix):
-        '''
+        """
         Creates chars2vec model.
 
         :param emb_dim: int, dimension of embeddings.
         :param char_to_ix: dict, keys are characters, values are sequence numbers of characters.
-        '''
+        """
 
         if not isinstance(emb_dim, int) or emb_dim < 1:
             raise TypeError("parameter 'emb_dim' must be a positive integer")
@@ -40,15 +39,17 @@ class Chars2Vec:
         embedding_2 = self.embedding_model(model_input_2)
         x = keras.layers.Subtract()([embedding_1, embedding_2])
         x = keras.layers.Dot(1)([x, x])
-        model_output = keras.layers.Dense(1, activation='sigmoid')(x)
+        model_output = keras.layers.Dense(1, activation="sigmoid")(x)
 
-        self.model = keras.models.Model(inputs=[model_input_1, model_input_2], outputs=model_output)
-        self.model.compile(optimizer='adam', loss='mae')
+        self.model = keras.models.Model(
+            inputs=[model_input_1, model_input_2], outputs=model_output
+        )
+        self.model.compile(optimizer="adam", loss="mae")
 
-
-    def fit(self, word_pairs, targets,
-            max_epochs, patience, validation_split, batch_size):
-        '''
+    def fit(
+        self, word_pairs, targets, max_epochs, patience, validation_split, batch_size
+    ):
+        """
         Fits model.
 
         :param word_pairs: list or numpy.ndarray of word pairs.
@@ -57,7 +58,7 @@ class Chars2Vec:
         :param patience: parameter 'patience' of callback in keras model.
         :param validation_split: parameter 'validation_split' of keras model.
         :param batch_size: parameter 'batch_size' of keras model.
-        '''
+        """
 
         if not isinstance(word_pairs, list) and not isinstance(word_pairs, np.ndarray):
             raise TypeError("parameters 'word_pairs' must be a list or numpy.ndarray")
@@ -104,20 +105,26 @@ class Chars2Vec:
         x_1_pad_seq = keras.preprocessing.sequence.pad_sequences(x_1)
         x_2_pad_seq = keras.preprocessing.sequence.pad_sequences(x_2)
 
-        self.model.fit([x_1_pad_seq, x_2_pad_seq], targets,
-                       batch_size=batch_size, epochs=max_epochs,
-                       validation_split=validation_split,
-                       callbacks=[keras.callbacks.EarlyStopping(monitor='val_loss', patience=patience)])
+        self.model.fit(
+            [x_1_pad_seq, x_2_pad_seq],
+            targets,
+            batch_size=batch_size,
+            epochs=max_epochs,
+            validation_split=validation_split,
+            callbacks=[
+                keras.callbacks.EarlyStopping(monitor="val_loss", patience=patience)
+            ],
+        )
 
     def vectorize_words(self, words, maxlen_padseq=None):
-        '''
+        """
         Returns embeddings for list of words. Uses cache of word embeddings to vectorization speed up.
 
         :param words: list or numpy.ndarray of strings.
         :param maxlen_padseq: parameter 'maxlen' for keras pad_sequences transform.
 
         :return word_vectors: numpy.ndarray, word embeddings.
-        '''
+        """
 
         if not isinstance(words, list) and not isinstance(words, np.ndarray):
             raise TypeError("parameter 'words' must be a list or numpy.ndarray")
@@ -149,7 +156,9 @@ class Chars2Vec:
 
                 list_of_embeddings.append(np.array(current_embedding))
 
-            embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(list_of_embeddings, maxlen=maxlen_padseq)
+            embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(
+                list_of_embeddings, maxlen=maxlen_padseq
+            )
             new_words_vectors = self.embedding_model.predict([embeddings_pad_seq])
 
             for i in range(len(new_words)):
@@ -161,52 +170,62 @@ class Chars2Vec:
 
 
 def save_model(c2v_model, path_to_model):
-    '''
+    """
     Saves trained model to directory.
 
     :param c2v_model: Chars2Vec object, trained model.
     :param path_to_model: str, path to save model.
-    '''
+    """
 
     if not os.path.exists(path_to_model):
         os.makedirs(path_to_model)
 
-    c2v_model.embedding_model.save_weights(path_to_model + '/weights.h5')
+    c2v_model.embedding_model.save_weights(path_to_model + "/weights.h5")
 
-    with open(path_to_model + '/model.pkl', 'wb') as f:
+    with open(path_to_model + "/model.pkl", "wb") as f:
         pickle.dump([c2v_model.dim, c2v_model.char_to_ix], f, protocol=2)
 
 
 def load_model(path):
-    '''
+    """
     Loads trained model.
 
     :param path: str, if it is 'eng_50', 'eng_100', 'eng_150', 'eng_200' or 'eng_300' then loads one of default models,
      else loads model from `path`.
 
     :return c2v_model: Chars2Vec object, trained model.
-    '''
+    """
 
-    if path in ['eng_50', 'eng_100', 'eng_150', 'eng_200', 'eng_300']:
-        path_to_model = os.path.dirname(os.path.abspath(__file__)) + '/trained_models/' + path
+    if path in ["eng_50", "eng_100", "eng_150", "eng_200", "eng_300"]:
+        path_to_model = (
+            os.path.dirname(os.path.abspath(__file__)) + "/trained_models/" + path
+        )
 
     else:
         path_to_model = path
 
-    with open(path_to_model + '/model.pkl', 'rb') as f:
+    with open(path_to_model + "/model.pkl", "rb") as f:
         structure = pickle.load(f)
         emb_dim, char_to_ix = structure[0], structure[1]
 
     c2v_model = Chars2Vec(emb_dim, char_to_ix)
-    c2v_model.embedding_model.load_weights(path_to_model + '/weights.h5')
-    c2v_model.embedding_model.compile(optimizer='adam', loss='mae')
+    c2v_model.embedding_model.load_weights(path_to_model + "/weights.h5")
+    c2v_model.embedding_model.compile(optimizer="adam", loss="mae")
 
     return c2v_model
 
 
-def train_model(emb_dim, X_train, y_train, model_chars,
-                max_epochs=200, patience=10, validation_split=0.05, batch_size=64):
-    '''
+def train_model(
+    emb_dim,
+    X_train,
+    y_train,
+    model_chars,
+    max_epochs=200,
+    patience=10,
+    validation_split=0.05,
+    batch_size=64,
+):
+    """
     Creates and trains chars2vec model using given training data.
 
     :param emb_dim: int, dimension of embeddings.
@@ -219,11 +238,10 @@ def train_model(emb_dim, X_train, y_train, model_chars,
     :param batch_size: parameter 'batch_size' of keras model.
 
     :return c2v_model: Chars2Vec object, trained model.
-    '''
+    """
 
     if not isinstance(X_train, list) and not isinstance(X_train, np.ndarray):
-        raise TypeError("parameter 'X_train' must be a list or numpy.ndarray")\
-
+        raise TypeError("parameter 'X_train' must be a list or numpy.ndarray")
     if not isinstance(y_train, list) and not isinstance(y_train, np.ndarray):
         raise TypeError("parameter 'y_train' must be a list or numpy.ndarray")
 
@@ -233,7 +251,7 @@ def train_model(emb_dim, X_train, y_train, model_chars,
     char_to_ix = {ch: i for i, ch in enumerate(model_chars)}
     c2v_model = Chars2Vec(emb_dim, char_to_ix)
 
-    targets = [float(el) for el in y_train]
+    targets = np.array(y_train)
     c2v_model.fit(X_train, targets, max_epochs, patience, validation_split, batch_size)
 
     return c2v_model
