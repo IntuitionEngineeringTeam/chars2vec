@@ -159,6 +159,39 @@ class Chars2Vec:
 
         return np.array(word_vectors)
 
+    def featuring_word(self, word):
+    
+        if not isinstance(word, str):
+            raise TypeError("word must be a string")
+
+        featuring_vector = []
+        for i in range(len(word)):
+            char_i = word[i]
+            feature_i = np.zeros(self.vocab_size)
+
+            if char_i in self.char_to_ix:
+                feature_i[self.char_to_ix[char_i]] = 1
+                featuring_vector.append(feature_i)
+            else:
+                featuring_vector.append(feature_i)
+        return np.array(featuring_vector)
+    
+    def check_similarity(self, word_1, word_2):
+        
+        if not isinstance(word_1, str):
+            raise TypeError("first word must be a string")
+        if not isinstance(word_2, str):
+            raise TypeError("second word must be a string")
+            
+        word_1_embedded = self.featuring_word(word_1)
+        word_2_embedded = self.featuring_word(word_2)
+
+        word_1_embedded_padding = keras.preprocessing.sequence.pad_sequences([word_1_embedded])
+        word_2_embedded_padding = keras.preprocessing.sequence.pad_sequences([word_2_embedded])
+
+        result = self.model.predict([word_1_embedded_padding,word_2_embedded_padding])
+
+        return result
 
 def save_model(c2v_model, path_to_model):
     '''
