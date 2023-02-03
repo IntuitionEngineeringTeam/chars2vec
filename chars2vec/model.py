@@ -1,8 +1,7 @@
 import numpy as np
 import pickle
-import keras
+import tensorflow as tf
 import os
-
 
 class Chars2Vec:
 
@@ -26,25 +25,24 @@ class Chars2Vec:
         self.dim = emb_dim
         self.cache = {}
 
-        lstm_input = keras.layers.Input(shape=(None, self.vocab_size))
+        lstm_input = tf.keras.layers.Input(shape=(None, self.vocab_size))
 
-        x = keras.layers.LSTM(emb_dim, return_sequences=True)(lstm_input)
-        x = keras.layers.LSTM(emb_dim)(x)
+        x = tf.keras.layers.LSTM(emb_dim, return_sequences=True)(lstm_input)
+        x = tf.keras.layers.LSTM(emb_dim)(x)
 
-        self.embedding_model = keras.models.Model(inputs=[lstm_input], outputs=x)
+        self.embedding_model = tf.keras.models.Model(inputs=[lstm_input], outputs=x)
 
-        model_input_1 = keras.layers.Input(shape=(None, self.vocab_size))
-        model_input_2 = keras.layers.Input(shape=(None, self.vocab_size))
+        model_input_1 = tf.keras.layers.Input(shape=(None, self.vocab_size))
+        model_input_2 = tf.keras.layers.Input(shape=(None, self.vocab_size))
 
         embedding_1 = self.embedding_model(model_input_1)
         embedding_2 = self.embedding_model(model_input_2)
-        x = keras.layers.Subtract()([embedding_1, embedding_2])
-        x = keras.layers.Dot(1)([x, x])
-        model_output = keras.layers.Dense(1, activation='sigmoid')(x)
+        x = tf.keras.layers.Subtract()([embedding_1, embedding_2])
+        x = tf.keras.layers.Dot(1)([x, x])
+        model_output = tf.keras.layers.Dense(1, activation='sigmoid')(x)
 
-        self.model = keras.models.Model(inputs=[model_input_1, model_input_2], outputs=model_output)
+        self.model = tf.keras.models.Model(inputs=[model_input_1, model_input_2], outputs=model_output)
         self.model.compile(optimizer='adam', loss='mae')
-
 
     def fit(self, word_pairs, targets,
             max_epochs, patience, validation_split, batch_size):
@@ -53,11 +51,13 @@ class Chars2Vec:
 
         :param word_pairs: list or numpy.ndarray of word pairs.
         :param targets: list or numpy.ndarray of targets.
-        :param max_epochs: parameter 'epochs' of keras model.
-        :param patience: parameter 'patience' of callback in keras model.
-        :param validation_split: parameter 'validation_split' of keras model.
-        :param batch_size: parameter 'batch_size' of keras model.
+        :param max_epochs: parameter 'epochs' of tensorflow model.
+        :param patience: parameter 'patience' of callback in tensorflow model.
+        :param validation_split: parameter 'validation_split' of tensorflow model.
         '''
+
+        word_pairs = np.array(word_pairs)
+        targets = np.array(targets)
 
         if not isinstance(word_pairs, list) and not isinstance(word_pairs, np.ndarray):
             raise TypeError("parameters 'word_pairs' must be a list or numpy.ndarray")
@@ -101,20 +101,20 @@ class Chars2Vec:
 
             x_2.append(np.array(emb_list_2))
 
-        x_1_pad_seq = keras.preprocessing.sequence.pad_sequences(x_1)
-        x_2_pad_seq = keras.preprocessing.sequence.pad_sequences(x_2)
-
+        x_1_pad_seq = tf.keras.preprocessing.sequence.pad_sequences(x_1)
+        x_2_pad_seq = tf.keras.preprocessing.sequence.pad_sequences(x_2)
+        
         self.model.fit([x_1_pad_seq, x_2_pad_seq], targets,
-                       batch_size=batch_size, epochs=max_epochs,
-                       validation_split=validation_split,
-                       callbacks=[keras.callbacks.EarlyStopping(monitor='val_loss', patience=patience)])
+                    batch_size=batch_size, epochs=max_epochs,
+                    validation_split=validation_split,
+                    callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=patience)])
 
     def vectorize_words(self, words, maxlen_padseq=None):
         '''
         Returns embeddings for list of words. Uses cache of word embeddings to vectorization speed up.
 
         :param words: list or numpy.ndarray of strings.
-        :param maxlen_padseq: parameter 'maxlen' for keras pad_sequences transform.
+        :param maxlen_padseq: parameter 'maxlen' for tensorflow pad_sequences transform.
 
         :return word_vectors: numpy.ndarray, word embeddings.
         '''
@@ -149,8 +149,8 @@ class Chars2Vec:
 
                 list_of_embeddings.append(np.array(current_embedding))
 
-            embeddings_pad_seq = keras.preprocessing.sequence.pad_sequences(list_of_embeddings, maxlen=maxlen_padseq)
-            new_words_vectors = self.embedding_model.predict([embeddings_pad_seq])
+            embeddings_pad_seq = tf.keras.preprocessing.sequence.pad_sequences(list_of_embeddings, maxlen=maxlen_padseq)
+            new_words_vectors = self.embedding_model(embeddings_pad_seq)
 
             for i in range(len(new_words)):
                 self.cache[new_words[i]] = new_words_vectors[i]
@@ -158,7 +158,6 @@ class Chars2Vec:
         word_vectors = [self.cache[current_word] for current_word in words]
 
         return np.array(word_vectors)
-
 
 def save_model(c2v_model, path_to_model):
     '''
