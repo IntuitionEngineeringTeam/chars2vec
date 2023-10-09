@@ -1,2 +1,3 @@
 setuptools
 tensorflow
+# tensorflow-macos # tensorflow doesn't work for macos
